@@ -24,15 +24,24 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy application files
-COPY . /var/www
+# Copy composer files first to leverage Docker cache
+COPY composer.json composer.lock ./
+
+# Install composer dependencies
+RUN composer install --no-interaction --no-dev --optimize-autoloader --no-scripts
+
+# Copy the rest of the application
+COPY . .
+
+# Generate autoload files
+RUN composer dump-autoload
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www
 
-# Install dependencies
-RUN composer install --no-interaction --no-dev --optimize-autoloader
-RUN npm install && npm run build
+# Install JS dependencies and build assets if needed
+# Uncomment if you need to build frontend assets
+# RUN npm install && npm run build
 
 # Expose port 9000
 EXPOSE 9000
