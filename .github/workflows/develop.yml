@@ -19,13 +19,13 @@ jobs:
           extensions: mbstring, bcmath, gd, pdo_mysql
           coverage: none
 
+      - name: Install Composer dependencies
+        run: composer install --no-ansi --no-interaction --no-progress
+
       - name: Copy environment file
         run: |
           php -r "file_exists('.env') || copy('.env.example', '.env');"
           php artisan key:generate
-
-      - name: Install Composer dependencies
-        run: composer install --no-ansi --no-interaction --no-progress
 
       - name: Install NPM dependencies
         run: npm install
