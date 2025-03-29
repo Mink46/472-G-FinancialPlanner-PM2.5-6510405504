@@ -27,14 +27,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy composer files first to leverage Docker cache
 COPY composer.json composer.lock ./
 
-# Install composer dependencies
-RUN composer install --no-interaction --no-dev --optimize-autoloader --no-scripts
+# Install composer dependencies and ignore mongodb extension requirement
+RUN composer install --no-interaction --no-dev --optimize-autoloader --no-scripts --ignore-platform-req=ext-mongodb
 
 # Copy the rest of the application
 COPY . .
 
 # Generate autoload files
-RUN composer dump-autoload
+RUN composer dump-autoload --ignore-platform-req=ext-mongodb
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www
